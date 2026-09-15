@@ -4,6 +4,8 @@ Notable changes to this repository are listed here by released semver. The versi
 
 ## Unreleased
 
+## [0.3.0] — 2026-09-15
+
 ### Added
 
 - Reference-integrity gate (`verify-doc-references`) in `doc-sync`: every repository-relative Markdown link in the paired documentation corpus must resolve to a path that exists and stay inside the repository. External URLs, protocol-relative targets, anchors, and paths written inside code spans or fenced blocks are not checked, and the report counts references checked rather than corpus files.
