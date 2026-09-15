@@ -21,6 +21,21 @@ export const COMPONENTS = {
     'docs/testing.md',
     'docs/testing.zh.md',
   ],
+  workflows: [
+    '.agents/inbox/README.md',
+    '.agents/inbox/README.zh.md',
+    '.agents/inbox/QUEUE.md',
+    '.agents/learning/README.md',
+    '.agents/learning/README.zh.md',
+    '.agents/learning/.gitignore',
+    '.agents/skills/kit-inbox-capture/SKILL.md',
+    '.agents/skills/kit-inbox-promote/SKILL.md',
+    '.agents/skills/kit-learning-note/SKILL.md',
+    '.agents/skills/kit-release/SKILL.md',
+    'ChangeLog.md',
+    'docs/release.md',
+    'docs/release.zh.md',
+  ],
   ci: ['.github/workflows/ci.yml'],
 } as const
 

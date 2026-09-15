@@ -36,8 +36,10 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
 | `packages/contracts/` | Cross-surface contract source; becomes the generated-artifact home in phase 3 |
 | `packages/create-adlc-kit-ts/` | The installer: scaffold or adopt the rule set |
 | `scripts/` | Gate orchestrator and verify scripts |
-| `docs/` | Architecture map and testing strategy |
+| `docs/` | Architecture map, testing strategy, release contract |
 | `.agents/notes/` | Decision records (Agent Notes) |
+| `.agents/inbox/`, `.agents/learning/` | Spark queue (`QUEUE.md` board) and session retrospectives |
+| `.agents/skills/` | The `kit-*` workflow skills (inbox capture/promote, learning note, release) |
 
 Docs are English-primary with `.zh.md` Chinese counterparts; `pnpm run doc-sync` rejects drift. `AGENTS.md` (agent-facing) is English-only.
 

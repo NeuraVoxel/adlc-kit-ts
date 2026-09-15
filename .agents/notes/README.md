@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-One kind of design doc lives here. An **Agent Note** records a decision that affects this repository — the *why* and *what we gave up*, the parts code and docs cannot carry. Session recaps and study notes do not belong here.
+One kind of design doc lives here. An **Agent Note** records a decision that affects this repository — the *why* and *what we gave up*, the parts code and docs cannot carry. Session recaps and study notes live in [`.agents/learning/`](../learning/README.md); uncommitted sparks queue in [`.agents/inbox/`](../inbox/README.md).
 
 ## Layout and naming
 

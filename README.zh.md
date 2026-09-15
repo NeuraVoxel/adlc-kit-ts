@@ -36,8 +36,10 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
 | `packages/contracts/` | 跨端契约源；第三步成为生成物家园 |
 | `packages/create-adlc-kit-ts/` | 安装器：脚手架新项目或采纳规则 |
 | `scripts/` | 门禁编排 runner 与 verify 脚本 |
-| `docs/` | 架构地图与测试策略 |
+| `docs/` | 架构地图、测试策略、发版合同 |
 | `.agents/notes/` | 决策记录（Agent Notes） |
+| `.agents/inbox/`、`.agents/learning/` | 灵感排队（`QUEUE.md` 排队板）与会话复盘 |
+| `.agents/skills/` | `kit-*` 工作流技能（inbox 捕获/升格、学习笔记、发版） |
 
 文档以英文为主档，配 `.zh.md` 中文对照；`pnpm run doc-sync` 拒绝两侧漂移。`AGENTS.md`（面向 agent）仅英文。
 

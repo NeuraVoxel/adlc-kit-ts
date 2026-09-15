@@ -13,12 +13,12 @@ adlc-kit-ts 是 adlc-kit 系列的 TypeScript 参考 kit。本文是改动 `serv
 | `packages/contracts/` | 跨端契约源。第三步成为生成物家园（gen/verify 成对 + 双端 same-PR）；现阶段保存手写的唯一事实源 |
 | `packages/create-adlc-kit-ts/` | 安装器：从本 checkout 脚手架新项目，或把规则组件采纳进既有项目；checkout 即模板 |
 | `scripts/` | `run-gates.ts` 门禁编排与 verify 脚本；语言无关的基础设施，不 import 业务代码 |
-| `docs/` | 架构地图（本文）与[测试策略](testing.zh.md) |
-| `.agents/notes/` | 决策记录 |
+| `docs/` | 架构地图（本文）、[测试策略](testing.zh.md)与[发版合同](release.zh.md) |
+| `.agents/` | 决策记录（`notes/`）、灵感 inbox 与学习复盘、以及 `kit-*` 工作流技能 |
 
 ## 语言策略
 
-面向人的文档以英文为主档，同一变更内更新 `.zh.md` 中文对照（`README.md`、`docs/*.md`、`.agents/notes/**/*.md`）。唯一豁免是 `AGENTS.md`：面向 agent 的站立命令保持纯英文，以约束模型上下文（[配对决策](../.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)）。`pnpm run doc-sync` 拒绝缺失、孤儿或结构漂移的对照文件。
+面向人的合同以英文为主档，同一变更内更新 `.zh.md` 中文对照：`README.md`、`docs/*.md`、`.agents/notes/**/*.md`，以及 inbox 与 learning 的 README。`AGENTS.md` 与 `.agents/skills/*/SKILL.md` 保持纯英文——面向 agent，以约束模型上下文（[配对决策](../.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)）。inbox spark、`QUEUE.md`、学习笔记与 `ChangeLog.md` 有意保持单语，在配对门禁之外。`pnpm run doc-sync` 拒绝缺失、孤儿或结构漂移的对照文件。
 
 ## 编译面（faces）
 

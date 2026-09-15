@@ -10,7 +10,7 @@ import {
 
 describe('resolveComponents', () => {
   it('selects every component when --only is absent', () => {
-    expect(resolveComponents(undefined)).toEqual(['rules', 'gates', 'docs', 'ci'])
+    expect(resolveComponents(undefined)).toEqual(['rules', 'gates', 'docs', 'workflows', 'ci'])
   })
 
   it('parses a comma-separated selection', () => {

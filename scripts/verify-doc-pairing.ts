@@ -13,7 +13,14 @@ const repoRoot = resolve(import.meta.dirname, '..')
 export const pairedDirs: readonly string[] = ['docs', '.agents/notes']
 
 /** Root-level files participating in pairing, counterparts included. */
-export const pairedRootFiles: readonly string[] = ['README.md', 'README.zh.md']
+export const pairedRootFiles: readonly string[] = [
+  'README.md',
+  'README.zh.md',
+  '.agents/inbox/README.md',
+  '.agents/inbox/README.zh.md',
+  '.agents/learning/README.md',
+  '.agents/learning/README.zh.md',
+]
 
 /**
  * Explicit, justified exemptions from pairing. Kept here so the

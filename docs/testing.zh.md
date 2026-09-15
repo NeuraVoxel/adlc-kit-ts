@@ -13,6 +13,7 @@
 | `packages/contracts/src/**` | 消费它的双端测试 + `pnpm run typecheck` |
 | `scripts/**` | `scripts/run-gates.spec.ts` 与 `scripts/verify-doc-pairing.spec.ts` + `pnpm run check:all` |
 | `packages/create-adlc-kit-ts/**` | `tests/lib.spec.ts` + 真实脚手架/采纳冒烟（见下） |
+| `.agents/{inbox,learning,skills}/**`、`ChangeLog.md`、`docs/release.md` | `pnpm run doc-sync`（配对合同）+ 评审；spark、排队行与学习笔记是不设门禁的用户内容 |
 | `docs/**`、`README*` | `pnpm run doc-sync`（双语文档配对） |
 
 ## 聚焦运行

@@ -32,6 +32,9 @@ pnpm run create -- adopt [dir] [--only rules,gates,docs,ci] [--force]
 - **Tests describe behavior.** Snapshot lanes for user-visible output and the real e2e lane arrive in phase 3 and self-skip without credentials.
 - **Docs update in the same PR as code**; every fact has one home and everything else links there. Docs state current contracts, not reasoning transcripts or change history.
 - **Every non-trivial change adds or updates one Agent Note in the same PR** ([.agents/notes/README.md](.agents/notes/README.md)); purely mechanical or local edits are exempt.
+- **Sparks and retrospectives live outside the notes tree**: uncommitted sparks queue in `.agents/inbox/` ([README](.agents/inbox/README.md), `QUEUE.md` board); session retrospectives go to `.agents/learning/` ([README](.agents/learning/README.md)). Promotion to a proposed note is always an explicit request.
+- **Workflow skills live flat in `.agents/skills/`** as `<name>/SKILL.md` direct children; the `kit-*` family (inbox capture/promote, learning note, release) ships in the installer's `workflows` component.
+- **Releases are explicit cuts** ([docs/release.md](docs/release.md)): one commit bumps the version in root `package.json`, renames the `ChangeLog.md` `## Unreleased` heading, rewrites next-cut attributions, and tags `v<version>`; development commits never touch the version or released changelog headings.
 - **Secrets never enter the repository**: real credentials come from environment variables or an uncommitted `.env`; credential-dependent tests self-skip without credentials.
 - **Cross-stack adoption rule**: a new stack gets its own language root and lane and goes green before any cross-stack seam exists; seams pass through `packages/contracts` and committed fixtures only, and live-process verification lives only in the e2e lane ([roadmap decision](.agents/notes/implemented/architecture/2026-09-15-adlc-kit-three-phase-roadmap.md)).
 

@@ -19,6 +19,7 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
 | `rules` | `AGENTS.md`, `.agents/notes/README*.md` |
 | `gates` | `lefthook.yml`, `.oxlintrc.json`, `scripts/run-gates.*`, `scripts/verify-doc-pairing.*` |
 | `docs` | `docs/architecture*.md`, `docs/testing*.md` |
+| `workflows` | inbox and learning contracts, the `kit-*` skills, `ChangeLog.md`, `docs/release*` |
 | `ci` | `.github/workflows/ci.yml` |
 
 `new` copies everything except `.git`, `node_modules`, `dist`, `coverage`, the lockfile, and this installer package, renames `@adlc-kit/*` and `adlc-kit-ts` to `--scope`/`--name` across text surfaces, recreates the `CLAUDE.md` alias, and initializes the git repository the postinstall hook requires.

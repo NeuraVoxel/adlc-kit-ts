@@ -13,12 +13,12 @@ adlc-kit-ts is the TypeScript reference kit of the adlc-kit series. This file is
 | `packages/contracts/` | Cross-surface contract source. In phase 3 this becomes the home of generated artifacts (gen/verify pairs, two-sided same-PR); today it holds the hand-written source of truth |
 | `packages/create-adlc-kit-ts/` | The installer: scaffolds a new project from this checkout or adopts rule components into an existing one; the checkout is the template |
 | `scripts/` | The `run-gates.ts` orchestrator and verify scripts; language-agnostic infrastructure that never imports business code |
-| `docs/` | The architecture map (this file) and the [testing strategy](testing.md) |
-| `.agents/notes/` | Decision records |
+| `docs/` | The architecture map (this file), the [testing strategy](testing.md), and the [release contract](release.md) |
+| `.agents/` | Decision records (`notes/`), the spark inbox and learning retrospectives, and the `kit-*` workflow skills |
 
 ## Language policy
 
-Human-facing docs are English-primary with a `.zh.md` Chinese counterpart updated in the same change (`README.md`, `docs/*.md`, `.agents/notes/**/*.md`). `AGENTS.md` is the single exemption: agent-facing standing orders stay English-only to bound model context ([pairing decision](../.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)). `pnpm run doc-sync` rejects missing, orphaned, or structurally drifted counterparts.
+Human-facing contracts are English-primary with a `.zh.md` Chinese counterpart updated in the same change: `README.md`, `docs/*.md`, `.agents/notes/**/*.md`, and the inbox and learning READMEs. `AGENTS.md` and the `.agents/skills/*/SKILL.md` files stay English-only — agent-facing, to bound model context ([pairing decision](../.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)). Inbox sparks, `QUEUE.md`, learning notes, and `ChangeLog.md` are single-language by design and outside the pairing gate. `pnpm run doc-sync` rejects missing, orphaned, or structurally drifted counterparts.
 
 ## Compiler faces
 
