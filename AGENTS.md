@@ -1,6 +1,6 @@
 # AGENTS.md
 
-adlc-kit-ts — the TypeScript reference kit of the adlc-kit series: React + Vite web face, Fastify server face, pnpm workspaces, and a gate system orchestrated solely by `scripts/run-gates.ts`. Read [docs/architecture.md](docs/architecture.md) before changing source.
+adlc-kit-ts — the TypeScript reference kit of the adlc-kit series: React + Vite web face, Fastify server face, pnpm workspaces, and a gate system orchestrated solely by `scripts/run-gates.ts`. Read [docs/architecture.md](docs/architecture.md) before changing source. Each module subtree (`server/`, `apps/web/`, `packages/`, `scripts/`) carries its own `AGENTS.md` supplementing these rules; read it before working in that tree.
 
 ## Commands
 
