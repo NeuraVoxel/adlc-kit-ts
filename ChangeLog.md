@@ -4,6 +4,8 @@ Notable changes to this repository are listed here by released semver. The versi
 
 ## Unreleased
 
+## [0.1.0] — 2026-09-15
+
 ### Added
 
 - Kit skeleton: React + Vite web face, Fastify server face, contracts seam package, the language-agnostic `run-gates` aggregate runner, lefthook hooks, the AGENTS.md instruction layer, the Agent Notes decision system, and the CI workflow.
