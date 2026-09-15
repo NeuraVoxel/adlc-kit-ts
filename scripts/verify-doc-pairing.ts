@@ -3,8 +3,9 @@
  * counterpart with the same section and fenced-block skeleton. English is the
  * source of truth; counterparts follow it section-for-section.
  */
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 const repoRoot = resolve(import.meta.dirname, '..')
 
@@ -79,6 +80,9 @@ function collectCorpus(): Map<string, string> {
     files.set(relPosixPath, readFileSync(absPath, 'utf8'))
   }
   const walk = (dir: string): void => {
+    // The gates component installs without docs; an absent corpus directory
+    // pairs nothing rather than crashing the gate.
+    if (!existsSync(dir)) return
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const abs = resolve(dir, entry.name)
       const rel = relative(repoRoot, abs).split('\\').join('/')
@@ -86,12 +90,20 @@ function collectCorpus(): Map<string, string> {
       else if (entry.isFile() && entry.name.endsWith('.md')) readInto(abs, rel)
     }
   }
-  for (const file of pairedRootFiles) readInto(resolve(repoRoot, file), file)
+  for (const file of pairedRootFiles) {
+    const abs = resolve(repoRoot, file)
+    // A rules-only adoption carries no root README; absent root files pair nothing.
+    if (existsSync(abs)) readInto(abs, file)
+  }
   for (const dir of pairedDirs) walk(resolve(repoRoot, dir))
   return files
 }
 
-if (import.meta.main) {
+// import.meta.main is unreliable under loader-based TS execution (tsx reports
+// undefined for entry paths outside the invoking project), so compare URLs.
+const isEntry =
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+if (isEntry) {
   const files = collectCorpus()
   const violations = findPairingViolations(files)
   if (violations.length > 0) {

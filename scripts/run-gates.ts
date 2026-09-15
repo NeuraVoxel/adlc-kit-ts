@@ -8,7 +8,9 @@
  */
 import { spawn } from 'node:child_process'
 import { availableParallelism } from 'node:os'
+import { resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
+import { pathToFileURL } from 'node:url'
 
 /** One command and its dependency metadata inside one aggregate. */
 export interface Gate {
@@ -160,6 +162,10 @@ async function main(args: string[]): Promise<number> {
   return failed ? 1 : 0
 }
 
-if (import.meta.main) {
+// import.meta.main is unreliable under loader-based TS execution (tsx reports
+// undefined for entry paths outside the invoking project), so compare URLs.
+const isEntry =
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+if (isEntry) {
   process.exitCode = await main(process.argv.slice(2))
 }
