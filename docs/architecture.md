@@ -1,47 +1,58 @@
-# 架构
+# Architecture
 
-adlc-kit-ts 是 adlc-kit 系列的 TypeScript 单栈参考 kit。本文是改动 `server/`、`apps/web/`、`packages/`、`scripts/` 前的必读地图；决策理由在 [.agents/notes/](../.agents/notes/README.md)，逐步操作指南不在本文。
+English | [中文](architecture.zh.md)
 
-## 组成
+adlc-kit-ts is the TypeScript reference kit of the adlc-kit series. This file is the map to read before changing `server/`, `apps/web/`, `packages/`, or `scripts/`; decision rationale lives in [Agent Notes](../.agents/notes/README.md), and step-by-step guides do not live here.
 
-| 目录 | 职责 |
+## Composition
+
+| Directory | Responsibility |
 |---|---|
-| `apps/web/` | React + Vite 前端；浏览器编译面（bundler resolution、DOM lib），产物禁 Node API |
-| `server/` | Fastify 后端；Node 编译面（NodeNext），tsx 直接执行 TS，暴露 `GET /health` |
-| `packages/contracts/` | 跨端契约源。第三步成为生成物家园（gen/verify 成对 + 双端 same-PR），现阶段手写共享类型 |
-| `scripts/` | `run-gates.ts` 门禁编排与 verify 脚本；语言无关的基础设施，不 import 业务代码 |
-| `docs/` | 架构地图（本文）与[测试策略](testing.md) |
-| `.agents/notes/` | 决策记录 |
+| `apps/web/` | React + Vite frontend; the browser face (bundler resolution, DOM lib); the bundle must not reach Node APIs |
+| `server/` | Fastify backend; the Node face (NodeNext); tsx executes TS directly; serves `GET /health` |
+| `packages/contracts/` | Cross-surface contract source. In phase 3 this becomes the home of generated artifacts (gen/verify pairs, two-sided same-PR); today it holds the hand-written source of truth |
+| `packages/create-adlc-kit-ts/` | The installer: scaffolds a new project from this checkout or adopts rule components into an existing one; the checkout is the template |
+| `scripts/` | The `run-gates.ts` orchestrator and verify scripts; language-agnostic infrastructure that never imports business code |
+| `docs/` | The architecture map (this file) and the [testing strategy](testing.md) |
+| `.agents/notes/` | Decision records |
 
-## 编译面（faces）
+## Language policy
 
-同一份 TypeScript 按编译目标分成四个 face 配置，各自独立 typecheck，共享的严格度选项在 `tsconfig.base.json`：
+Human-facing docs are English-primary with a `.zh.md` Chinese counterpart updated in the same change (`README.md`, `docs/*.md`, `.agents/notes/**/*.md`). `AGENTS.md` is the single exemption: agent-facing standing orders stay English-only to bound model context ([pairing decision](../.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)). `pnpm run doc-sync` rejects missing, orphaned, or structurally drifted counterparts.
 
-- `server/tsconfig.json`：NodeNext + node types，运行于 Node。
-- `apps/web/tsconfig.json`：esnext + bundler resolution + DOM lib + react-jsx，产物为浏览器 bundle。
-- `packages/contracts/tsconfig.json`：NodeNext，双端共享的类型源。
-- `tsconfig.tools.json`：仓库工具与门禁脚本（scripts/、vitest.config.ts）。
+## Compiler faces
 
-face 自己拥有 `module`/`moduleResolution`/`lib`；不存在根级 solution 编译。跨包类型经由 `tsconfig.base.json` 的 `paths` 从源码解析（源码平面）；引入构建产物平面（如 tsdown）时先加 face 再加构建，不合并 face。
+The same TypeScript compiles under four face configs, each typechecked independently; shared strictness lives in `tsconfig.base.json`:
 
-## 门禁体系
+- `server/tsconfig.json` — NodeNext + node types; runs on Node.
+- `apps/web/tsconfig.json` — esnext + bundler resolution + DOM lib + react-jsx; bundles for the browser.
+- `packages/contracts/tsconfig.json` — NodeNext; the shared type source.
+- `tsconfig.tools.json` — repository tooling: `scripts/`, `vitest.config.ts`, the installer package.
 
-`pnpm run check:ci` 即 `scripts/run-gates.ts ci-primary`。runner 只做聚合图调度（spawn 命令、`needs` 依赖、有界并行、fail-fast 于首个失败阶段），不解析任何工具链——加一条泳道是加 Gate 定义，不是改 runner。当前 `ci-primary` 图：lint、typecheck、test 三条并行边。
+Faces own `module`/`moduleResolution`/`lib`; there is no root solution program. Cross-package types resolve from source through `paths` in `tsconfig.base.json` (the source plane); when an artifact plane arrives (for example tsdown), add the face first and the build second — never merge faces.
 
-扩展点：
+## Gate system
 
-- **新 verify 门禁**：`scripts/verify-<invariant>.ts` + 配套 spec（证明拒绝一个非法用例），挂进 `gatesForMode`。
-- **新泳道**（如 `ci-web`、`ci-python`）：`Mode` 联合加成员 + `gatesForMode` 加图；runner 本体不变。
-- **UI 文案门禁**：引入 locale 字典时配套 `verify-client-ui-copy`（拒绝组件内硬编码文案）。
-- **端到端（第三步）**：`ci-e2e` 聚合，独立于单测泳道；无凭据自跳过。
+`pnpm run check:ci` is `scripts/run-gates.ts ci-primary`. The runner only schedules the aggregate graph (spawn commands, `needs` dependencies, bounded parallelism, fail-fast per stage) and never parses a toolchain — adding a lane means adding Gate definitions, not runner changes. Current graph:
 
-Git 钩子分工：pre-commit 只做暂存文件的快速检查（lint --fix、行尾空白），pre-push 只跑 typecheck，CI 拥有穷举矩阵。本地检查点保持快速是钩子存活的前提。
+- `ci-primary`: lint, typecheck, test — one parallel stage.
+- `doc-sync`: bilingual doc pairing.
+- `check-all`: both of the above; this is what CI runs.
 
-## 跨栈接缝（第三步预告）
+Extension points:
 
-`packages/contracts` 只允许两种跨栈共享物：
+- **New verify gate**: `scripts/verify-<invariant>.ts` with a spec proving it rejects one invalid case, wired into `gatesForMode`.
+- **New lane** (for example `ci-web`, `ci-python`): extend the `Mode` union and `gatesForMode`; the runner body does not change.
+- **UI copy gate**: when locale dictionaries arrive, add a verify gate rejecting copy hard-coded in components.
+- **End-to-end (phase 3)**: a `ci-e2e` lane, separate from unit lanes, self-skipping without credentials.
 
-1. **契约 schema**——生成各端类型，禁止在任何语言里手写对端类型副本；生成物新鲜度由 gen/verify 成对门禁守护。
-2. **提交在 git 里的 fixtures**——双端离线回放，保证每条泳道可独立验证。
+Git hook ownership: pre-commit runs fast staged-file checks only (lint --fix, trailing whitespace), pre-push runs typecheck only, and CI owns the exhaustive matrix. Fast local checkpoints are the price of hooks that stay installed.
 
-改契约的 PR 必须在同一变更内更新 provider 与 consumer；活进程集成验证只存在于 `ci-e2e` 泳道。三阶段路线与组合规则：[Agent Note](../.agents/notes/implemented/architecture/2026-09-15-adlc-kit-three-phase-roadmap.md)。
+## Cross-stack seam (phase 3 preview)
+
+`packages/contracts` admits exactly two kinds of cross-stack shared artifacts:
+
+1. **Contract schemas** — per-language types are generated from them; hand-written type copies in any language are forbidden; generation freshness is gated by a gen/verify pair.
+2. **Fixtures committed to git** — replayed offline by both sides, which is what keeps every lane independently validatable.
+
+A contract edit updates provider and consumer in the same change; live-process integration verification lives only in the `ci-e2e` lane. The three-phase roadmap and its composition rules: [Agent Note](../.agents/notes/implemented/architecture/2026-09-15-adlc-kit-three-phase-roadmap.md). The installer design: [Agent Note](../.agents/notes/implemented/process/2026-09-15-create-adlc-kit-ts-installer.md).

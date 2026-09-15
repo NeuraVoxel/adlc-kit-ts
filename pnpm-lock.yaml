@@ -63,6 +63,8 @@ importers:
 
   packages/contracts: {}
 
+  packages/create-adlc-kit-ts: {}
+
   server:
     dependencies:
       fastify:

@@ -1,31 +1,40 @@
 # AGENTS.md
 
-adlc-kit-ts —— adlc-kit 系列的 TypeScript 参考实现：React + Vite 前端、Fastify 后端、pnpm workspaces、以 `scripts/run-gates.ts` 为唯一编排点的门禁体系。改代码前先读 [docs/architecture.md](docs/architecture.md)。
+adlc-kit-ts — the TypeScript reference kit of the adlc-kit series: React + Vite web face, Fastify server face, pnpm workspaces, and a gate system orchestrated solely by `scripts/run-gates.ts`. Read [docs/architecture.md](docs/architecture.md) before changing source.
 
-## 命令
+## Commands
 
 ```sh
-pnpm install          # 安装依赖，postinstall 自动安装 lefthook 钩子
-pnpm run check:ci     # 门禁聚合：lint + typecheck + test（本地与 CI 同一入口）
-pnpm run dev:server   # Fastify，http://127.0.0.1:3000/health
-pnpm run dev:web      # Vite dev server（/api 代理到 127.0.0.1:3000）
+pnpm install          # also installs lefthook hooks via postinstall
+pnpm run check:ci     # gate aggregate: lint + typecheck + test (one entry for local and CI)
+pnpm run check:all    # ci-primary + doc-sync; this is what CI runs
+pnpm run doc-sync     # documentation gates (bilingual pairing)
+pnpm run dev:server   # Fastify, http://127.0.0.1:3000/health
+pnpm run dev:web      # Vite dev server (/api proxies to 127.0.0.1:3000)
 ```
 
-`typecheck` / `lint` / `test` 可单独运行。测试证据按变更面选择（[docs/testing.md](docs/testing.md)），不默认全量。
+Scaffold or adopt the rule set from a checkout of this kit:
 
-## 核心约定
+```sh
+pnpm run create -- new <dir> [--scope <scope>] [--name <name>]
+pnpm run create -- adopt [dir] [--only rules,gates,docs,ci] [--force]
+```
 
-- **ESM everywhere**（`"type": "module"`）。跨包用包名 `@adlc-kit/*`，包内相对导入带 `.ts` 后缀；运行时经 tsx 直接执行 TS，构建步骤引入前不存在 `lib/`。
-- **显式优先于隐式**：默认值是拥有者的显式 resolve 步骤，不藏在 `run()` 里；配置错误在加载期响亮失败，从不静默跳过缺失引用。
-- **类型化同进程边界信任 TypeScript**：不为静态接口已要求的值补运行时校验或敌意输入测试；验证只发生在 wire、文件、环境、子进程边界。
-- **可机械判定的约束硬化为门禁**：写成 `scripts/verify-*.ts` 并配一个拒绝非法用例的 spec，再挂进 `run-gates.ts` 聚合图。软约定被违反两次即启动硬化。
-- **测试描述行为**。模型/用户可见输出的快照泳道与真实 e2e 泳道在第三步引入，无凭据自跳过。
-- **UI 文案单一家园**：现阶段页面文案只出现在 `apps/web/src` 组件内；引入多语言时迁移到 locale 字典并配套 verify 门禁（见 architecture.md 扩展点）。
-- **文档随代码同 PR 更新**；每个事实只有一个家，其余位置链接。文档写当前状态与完整契约，不写推理过程与变更史。
-- **每个非平凡变更在同一 PR 内新增或更新一条 Agent Note**（[.agents/notes/README.md](.agents/notes/README.md)）；纯机械或局部修改豁免。
-- **密钥永不入库**：真实凭据走环境变量或未提交的 `.env`；涉及凭据的测试无凭据时自跳过。
-- **跨栈接入规则**：新技术栈先建独立语言根 + 独立泳道，本栈门禁全绿后才建跨栈接缝；接缝只通过 `packages/contracts` 与提交在 git 里的 fixtures，活进程验证只存在于 e2e 泳道（[路线图决策](.agents/notes/implemented/architecture/2026-09-15-adlc-kit-three-phase-roadmap.md)）。
+`typecheck` / `lint` / `test` run standalone. Select test evidence by change surface ([docs/testing.md](docs/testing.md)); never default to the full suite.
 
-## Git 钩子与门禁分工
+## Core conventions
 
-pre-commit 只做暂存文件快速检查（oxlint --fix、行尾空白检查，文件以恰好一个换行结尾）；pre-push 只跑 typecheck；CI 拥有穷举矩阵（[.github/workflows/ci.yml](.github/workflows/ci.yml)）。不绕过失败的门禁：先修复，或证明失败与环境相关。不为提交或推送重复运行已通过的检查。
+- **English-primary, paired docs.** Human-facing docs (`README.md`, `docs/*.md`, `.agents/notes/**/*.md`) are written in English with a `.zh.md` Chinese counterpart updated in the same change; `AGENTS.md` is the only exemption, staying English-only to bound agent context ([pairing decision](.agents/notes/implemented/process/2026-09-15-bilingual-doc-pairing.md)). `pnpm run doc-sync` rejects missing, orphaned, or drifted counterparts.
+- **ESM everywhere** (`"type": "module"`). Use package names `@adlc-kit/*` across packages and `.ts` extensions on local relative imports; tsx executes TS directly — no `lib/` exists until a build step is introduced.
+- **Explicit over implicit**: defaulting is an explicit resolve step owned by the caller, never a hidden `?? default` inside `run()`; misconfiguration fails loud at load; never silently skip a missing referent.
+- **Trust TypeScript at typed same-process boundaries**: no runtime validation or hostile-input tests for values the static interface requires; validate at wire, file, environment, and subprocess boundaries.
+- **Hardened invariants become gates**: write `scripts/verify-*.ts` with a spec proving it rejects one invalid case, then wire it into the `run-gates.ts` graph. Promote a soft convention after its second violation.
+- **Tests describe behavior.** Snapshot lanes for user-visible output and the real e2e lane arrive in phase 3 and self-skip without credentials.
+- **Docs update in the same PR as code**; every fact has one home and everything else links there. Docs state current contracts, not reasoning transcripts or change history.
+- **Every non-trivial change adds or updates one Agent Note in the same PR** ([.agents/notes/README.md](.agents/notes/README.md)); purely mechanical or local edits are exempt.
+- **Secrets never enter the repository**: real credentials come from environment variables or an uncommitted `.env`; credential-dependent tests self-skip without credentials.
+- **Cross-stack adoption rule**: a new stack gets its own language root and lane and goes green before any cross-stack seam exists; seams pass through `packages/contracts` and committed fixtures only, and live-process verification lives only in the e2e lane ([roadmap decision](.agents/notes/implemented/architecture/2026-09-15-adlc-kit-three-phase-roadmap.md)).
+
+## Git hooks and gate ownership
+
+pre-commit runs fast staged-file checks only (oxlint --fix, trailing-whitespace check — files end with exactly one newline); pre-push runs typecheck only; CI owns the exhaustive matrix ([.github/workflows/ci.yml](.github/workflows/ci.yml)). Never bypass a failing gate: fix it or prove the failure is environmental. Do not repeat an already-passing check for commit or push.

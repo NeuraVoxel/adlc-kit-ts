@@ -1,24 +1,30 @@
-# 测试策略
+# Testing strategy
 
-证据匹配变更面：跑能证明本次变更回归的最窄检查，不默认全量，不重复已通过的检查；CI 拥有穷举矩阵。
+English | [中文](testing.zh.md)
 
-## 变更面 → 证据
+Evidence matches the change surface: run the narrowest checks that would fail for this change's regression; never default to the full suite; never repeat a check that already passed. CI owns the exhaustive matrix.
 
-| 变更面 | 证据 |
+## Change surface → evidence
+
+| Surface | Evidence |
 |---|---|
-| `server/src/**` | 根 vitest 的 `node` project（`server/tests/`），Fastify `inject()` 无网络测试 |
-| `apps/web/src/**` | 根 vitest 的 `web` project（jsdom + Testing Library） |
-| `packages/contracts/src/**` | 消费它的双端测试 + `pnpm run typecheck` |
-| `scripts/**` | `scripts/run-gates.spec.ts` + `pnpm run check:ci` |
-| 文档 | 人工评审；出现死链或漂移症状后再引入 doc 门禁 |
+| `server/src/**` | The vitest `node` project (`server/tests/`); Fastify `inject()`, no network |
+| `apps/web/src/**` | The vitest `web` project (jsdom + Testing Library) |
+| `packages/contracts/src/**` | The consuming tests on both sides + `pnpm run typecheck` |
+| `scripts/**` | `scripts/run-gates.spec.ts` and `scripts/verify-doc-pairing.spec.ts` + `pnpm run check:all` |
+| `packages/create-adlc-kit-ts/**` | `tests/lib.spec.ts` + a real scaffold/adopt smoke (see below) |
+| `docs/**`, `README*` | `pnpm run doc-sync` (bilingual pairing) |
 
-## 聚焦运行
+## Focused runs
 
 ```sh
 pnpm exec vitest run server/tests/app.spec.ts
 pnpm exec vitest run --project web
+pnpm run doc-sync
 ```
 
-## 演进顺序
+Installer changes warrant a real smoke: scaffold into a temp directory and run the gates there, since the copied checkout is the product.
 
-覆盖率门禁暂未启用；引入顺序是先全局阈值，再按风险面 per-file 收紧。快照泳道与真实 e2e 泳道（`ci-e2e`）在第三步引入，无凭据自跳过；在此之前，用户可见输出由 `web` project 的组件测试守护。测试描述行为而非实现：重构不改测试，行为变更连同测试一起改。
+## Evolution order
+
+Coverage gates are not enabled yet; introduce a global threshold first, then tighten per-file as risk concentrates. Snapshot lanes and the real e2e lane (`ci-e2e`) arrive in phase 3 and self-skip without credentials; until then, component tests in the `web` project guard user-visible output. Tests describe behavior, not implementation: refactors leave tests alone; behavior changes move with their tests.

@@ -9,7 +9,7 @@ export default defineConfig({
         test: {
           name: 'node',
           environment: 'node',
-          include: ['server/tests/**/*.spec.ts', 'scripts/**/*.spec.ts'],
+          include: ['server/tests/**/*.spec.ts', 'scripts/**/*.spec.ts', 'packages/create-adlc-kit-ts/tests/**/*.spec.ts'],
         },
       }),
       defineProject({

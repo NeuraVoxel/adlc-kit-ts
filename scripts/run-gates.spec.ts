@@ -11,6 +11,7 @@ const gate = (id: string, needs?: string[]): Gate => ({
 describe('parseMode', () => {
   it('returns the known aggregates', () => {
     expect(parseMode('ci-primary')).toBe('ci-primary')
+    expect(parseMode('doc-sync')).toBe('doc-sync')
     expect(parseMode('check-all')).toBe('check-all')
   })
 
@@ -43,8 +44,21 @@ describe('planStages', () => {
 })
 
 describe('gatesForMode', () => {
-  it('exposes the flat lint/typecheck/test graph', () => {
+  it('exposes the flat lint/typecheck/test graph for ci-primary', () => {
     expect(gatesForMode('ci-primary').map(entry => entry.id)).toEqual(['lint', 'typecheck', 'test'])
+  })
+
+  it('exposes the doc pairing gate for doc-sync', () => {
+    expect(gatesForMode('doc-sync').map(entry => entry.id)).toEqual(['doc-pairing'])
+  })
+
+  it('unions both graphs for check-all', () => {
+    expect(gatesForMode('check-all').map(entry => entry.id)).toEqual([
+      'lint',
+      'typecheck',
+      'test',
+      'doc-pairing',
+    ])
   })
 })
 

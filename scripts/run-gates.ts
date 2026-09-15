@@ -21,7 +21,7 @@ export interface Gate {
 }
 
 /** A named aggregate exposed by the gate runner. */
-export type Mode = 'ci-primary' | 'check-all'
+export type Mode = 'ci-primary' | 'doc-sync' | 'check-all'
 
 /** The observed outcome of one gate process. */
 export interface GateResult {
@@ -39,10 +39,13 @@ export interface GateResult {
 export function parseMode(raw: string | undefined): Mode {
   switch (raw) {
     case 'ci-primary':
+    case 'doc-sync':
     case 'check-all':
       return raw
     default:
-      throw new Error(`run-gates: expected mode ci-primary | check-all, got ${JSON.stringify(raw ?? '')}.`)
+      throw new Error(
+        `run-gates: expected mode ci-primary | doc-sync | check-all, got ${JSON.stringify(raw ?? '')}.`,
+      )
   }
 }
 
@@ -54,13 +57,21 @@ export function parseMode(raw: string | undefined): Mode {
 export function gatesForMode(mode: Mode): Gate[] {
   switch (mode) {
     case 'ci-primary':
-    case 'check-all':
-      // Both aggregates share one graph until a second lane exists.
       return [
         { id: 'lint', label: 'oxlint', command: ['pnpm', 'run', 'lint'] },
         { id: 'typecheck', label: 'tsc --noEmit across faces', command: ['pnpm', 'run', 'typecheck'] },
         { id: 'test', label: 'vitest run', command: ['pnpm', 'run', 'test'] },
       ]
+    case 'doc-sync':
+      return [
+        {
+          id: 'doc-pairing',
+          label: 'bilingual doc pairing',
+          command: ['pnpm', 'exec', 'tsx', 'scripts/verify-doc-pairing.ts'],
+        },
+      ]
+    case 'check-all':
+      return [...gatesForMode('ci-primary'), ...gatesForMode('doc-sync')]
   }
 }
 
