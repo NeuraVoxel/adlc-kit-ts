@@ -16,7 +16,7 @@ Record one spark. Contract authority: the [inbox README](../../inbox/README.md).
 
 | Input | Required | Notes |
 |---|---|---|
-| **Body** (the spark) | yes | The idea and why it is captured now; any language, terms and paths stay English |
+| **Body** (the spark) | yes | The idea and why it is captured now; body defaults to Chinese, terms and paths stay English |
 | **Title** | no | Short title; derive from the body when missing |
 | **slug** | no | `kebab-case`; derive from the title when missing |
 | **Notes** | no | Optional context only — never a Proposal skeleton |

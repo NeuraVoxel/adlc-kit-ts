@@ -10,7 +10,7 @@ This directory holds learning notes for this repository: session retrospectives,
 
 ## Entry language
 
-Write in whatever language you think in; terms, paths, and commands stay English.
+Write in Chinese by default; terms, paths, and commands stay English.
 
 ## Layout
 

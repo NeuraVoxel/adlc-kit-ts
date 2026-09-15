@@ -12,7 +12,7 @@
 
 ## 条目语言
 
-正文用自己顺手的语言写；Status 取值、路径、命令与术语保留英文（例如 Agent Note、`QUEUE.md`、`Status: open`）。
+正文默认用中文写；Status 取值、路径、命令与术语保留英文（例如 Agent Note、`QUEUE.md`、`Status: open`）。
 
 ## 布局
 

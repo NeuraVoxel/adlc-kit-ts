@@ -27,7 +27,7 @@ If the topic is missing, ask once and stop. Do not interview for optional fields
 
 1. Confirm `.agents/learning/README.md` exists; if not, stop and say learning is not initialized.
 2. Date = today (`yyyy-mm-dd`). Path: `.agents/learning/{date}-{slug}.md`. If the path exists, adjust the slug (`-2`, `-3`, …) — never overwrite.
-3. Write the note: a `# <title>` heading plus a short body, in the writer's language; terms, paths, and commands stay English. No Agent Note header, no `Status:` line, no skeleton — learning notes sit outside every gate.
+3. Write the note: a `# <title>` heading plus a short body, in Chinese by default; terms, paths, and commands stay English. No Agent Note header, no `Status:` line, no skeleton — learning notes sit outside every gate.
 4. If the note surfaces an uncommitted spark or todo, capture it in `.agents/inbox/` ([kit-inbox-capture](../kit-inbox-capture/SKILL.md)) and link it from the note — never turn learning into a todo list.
 5. Content that must not leave the machine goes to `.agents/learning/private/` (gitignored by the scoped `.gitignore`).
 6. Report the created path. Do **not** commit unless the user asks.

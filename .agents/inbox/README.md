@@ -12,7 +12,7 @@ One idea must not exist as an authoritative todo in both the inbox and learning 
 
 ## Entry language
 
-Write the body in whatever language you think in; Status values, paths, commands, and terms stay English (for example Agent Note, `QUEUE.md`, `Status: open`).
+Default to Chinese for the body; Status values, paths, commands, and terms stay English (for example Agent Note, `QUEUE.md`, `Status: open`).
 
 ## Layout
 
