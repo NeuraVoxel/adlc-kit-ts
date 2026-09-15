@@ -17,7 +17,7 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 | Component | Files |
 |---|---|
 | `rules` | `AGENTS.md`, `.agents/notes/README*.md` |
-| `gates` | `lefthook.yml`, `.oxlintrc.json`, `scripts/run-gates.*`, `scripts/verify-doc-pairing.*` |
+| `gates` | `lefthook.yml`, `.oxlintrc.json`, `scripts/run-gates.*`, `scripts/verify-doc-pairing.*`, `scripts/agent-note-tree.*`, `scripts/verify-agent-note-format.*`, `scripts/verify-archived-agent-notes.*`, `scripts/archived-notes.manifest.json` |
 | `docs` | `docs/architecture*.md`, `docs/testing*.md` |
 | `workflows` | inbox and learning contracts, the `kit-*` skills, `ChangeLog.md`, `docs/release*` |
 | `ci` | `.github/workflows/ci.yml` |

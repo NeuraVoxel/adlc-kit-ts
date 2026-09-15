@@ -71,6 +71,21 @@ export function gatesForMode(mode: Mode): Gate[] {
           label: 'bilingual doc pairing',
           command: ['pnpm', 'exec', 'tsx', 'scripts/verify-doc-pairing.ts'],
         },
+        {
+          id: 'agent-note-tree',
+          label: 'agent note classification',
+          command: ['pnpm', 'exec', 'tsx', 'scripts/agent-note-tree.ts'],
+        },
+        {
+          id: 'agent-note-format',
+          label: 'agent note format',
+          command: ['pnpm', 'exec', 'tsx', 'scripts/verify-agent-note-format.ts'],
+        },
+        {
+          id: 'archived-agent-notes',
+          label: 'frozen archive integrity',
+          command: ['pnpm', 'exec', 'tsx', 'scripts/verify-archived-agent-notes.ts'],
+        },
       ]
     case 'check-all':
       return [...gatesForMode('ci-primary'), ...gatesForMode('doc-sync')]

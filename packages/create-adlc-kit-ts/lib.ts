@@ -14,6 +14,13 @@ export const COMPONENTS = {
     'scripts/run-gates.spec.ts',
     'scripts/verify-doc-pairing.ts',
     'scripts/verify-doc-pairing.spec.ts',
+    'scripts/agent-note-tree.ts',
+    'scripts/agent-note-tree.spec.ts',
+    'scripts/verify-agent-note-format.ts',
+    'scripts/verify-agent-note-format.spec.ts',
+    'scripts/verify-archived-agent-notes.ts',
+    'scripts/verify-archived-agent-notes.spec.ts',
+    'scripts/archived-notes.manifest.json',
   ],
   docs: [
     'docs/architecture.md',

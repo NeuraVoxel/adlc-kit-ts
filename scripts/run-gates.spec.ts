@@ -48,8 +48,13 @@ describe('gatesForMode', () => {
     expect(gatesForMode('ci-primary').map(entry => entry.id)).toEqual(['lint', 'typecheck', 'test'])
   })
 
-  it('exposes the doc pairing gate for doc-sync', () => {
-    expect(gatesForMode('doc-sync').map(entry => entry.id)).toEqual(['doc-pairing'])
+  it('exposes the doc and notes gates for doc-sync', () => {
+    expect(gatesForMode('doc-sync').map(entry => entry.id)).toEqual([
+      'doc-pairing',
+      'agent-note-tree',
+      'agent-note-format',
+      'archived-agent-notes',
+    ])
   })
 
   it('unions both graphs for check-all', () => {
@@ -58,6 +63,9 @@ describe('gatesForMode', () => {
       'typecheck',
       'test',
       'doc-pairing',
+      'agent-note-tree',
+      'agent-note-format',
+      'archived-agent-notes',
     ])
   })
 })
