@@ -28,6 +28,11 @@ describe('parseNotePath', () => {
     expect(parseNotePath('implemented/architecture/2026-9-1-topic.md')).toBeNull()
     expect(parseNotePath('implemented/architecture/notes.txt')).toBeNull()
   })
+
+  it('accepts zh counterparts', () => {
+    const parsed = parseNotePath('implemented/process/2026-09-15-topic.zh.md')
+    expect(parsed).toEqual({ lifecycle: 'implemented', noteClass: 'process', date: '2026-09-15', topic: 'topic' })
+  })
 })
 
 describe('findTreeViolations', () => {

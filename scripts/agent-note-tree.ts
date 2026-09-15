@@ -6,6 +6,7 @@
  */
 import { existsSync, readdirSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 export const LIFECYCLES = ['proposed', 'implemented', 'rejected', 'archived'] as const
 export type Lifecycle = (typeof LIFECYCLES)[number]
@@ -20,7 +21,7 @@ export const CLASSES = [
 ] as const
 export type NoteClass = (typeof CLASSES)[number]
 
-const NOTE_NAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)\.md$/
+const NOTE_NAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9-]+)(?:\.zh)?\.md$/
 
 /** A parsed note path: `{lifecycle}/{class}/yyyy-mm-dd-topic.md`. */
 export interface NotePath {
@@ -91,4 +92,22 @@ export function collectNotePaths(notesDir: string): string[] {
   }
   walk(notesDir)
   return paths.sort()
+}
+
+// Entry guards compare URLs: import.meta.main is unreliable under
+// loader-based TS execution outside the invoking project.
+const isEntry =
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href
+if (isEntry) {
+  const notesDir = resolve(import.meta.dirname, '..', '.agents', 'notes')
+  const paths = collectNotePaths(notesDir)
+  const violations = findTreeViolations(paths)
+  if (violations.length > 0) {
+    console.error(
+      `agent-note-tree: ${violations.length} violation(s):\n${violations.map(line => `  - ${line}`).join('\n')}`,
+    )
+    process.exitCode = 1
+  } else {
+    console.log(`agent-note-tree: ${paths.length} path(s) classified.`)
+  }
 }
