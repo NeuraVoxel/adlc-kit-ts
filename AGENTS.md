@@ -40,4 +40,6 @@ pnpm run create -- adopt [dir] [--only rules,gates,docs,workflows,ci] [--force]
 
 ## Git hooks and gate ownership
 
+**Never commit or push on your own.** Finishing a change ends with the narrowest relevant evidence ([docs/testing.md](docs/testing.md)) and a report for acceptance; `git commit` and `git push` run only on the user's explicit request in the current turn. Release cuts follow the same discipline one level up: the cut itself is one explicit request ([docs/release.md](docs/release.md)).
+
 pre-commit runs fast staged-file checks only (oxlint --fix, trailing-whitespace check — files end with exactly one newline); pre-push runs typecheck only; CI owns the exhaustive matrix ([.github/workflows/ci.yml](.github/workflows/ci.yml)). Never bypass a failing gate: fix it or prove the failure is environmental. Do not repeat an already-passing check for commit or push.
