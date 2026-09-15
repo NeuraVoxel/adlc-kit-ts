@@ -22,7 +22,7 @@ pnpm run dev:web      # Vite dev server
 pnpm run create -- new ../my-app --scope @myco --name my-app
 
 # 只把验证过的规则采纳进既有项目
-pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
+pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 ```
 
 `new` 会拷贝除 `.git`、`node_modules`、构建产物和 lockfile 之外的一切，把 `@adlc-kit/*` 和 `adlc-kit-ts` 改名为 `--scope`/`--name`，并重建 `CLAUDE.md` 别名。`adopt` 不加 `--force` 时拒绝覆盖已有文件，会把缺失的 runner 脚本合并进 `package.json`，并打印门禁所依赖的前置条件。详见[安装器 README](packages/create-adlc-kit-ts/README.md)。

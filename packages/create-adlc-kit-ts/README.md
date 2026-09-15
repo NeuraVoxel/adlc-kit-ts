@@ -9,7 +9,7 @@ Zero-dependency installer for the adlc-kit-ts rule set. The checkout is the temp
 pnpm run create -- new ../my-app --scope @myco --name my-app
 
 # Adopt only the verified rules into an existing project
-pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
+pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 ```
 
 ## Components

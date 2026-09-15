@@ -17,7 +17,7 @@ Scaffold or adopt the rule set from a checkout of this kit:
 
 ```sh
 pnpm run create -- new <dir> [--scope <scope>] [--name <name>]
-pnpm run create -- adopt [dir] [--only rules,gates,docs,ci] [--force]
+pnpm run create -- adopt [dir] [--only rules,gates,docs,workflows,ci] [--force]
 ```
 
 `typecheck` / `lint` / `test` run standalone. Select test evidence by change surface ([docs/testing.md](docs/testing.md)); never default to the full suite.

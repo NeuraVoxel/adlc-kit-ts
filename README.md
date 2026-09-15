@@ -22,7 +22,7 @@ The checkout is the template. From a clone of this repository:
 pnpm run create -- new ../my-app --scope @myco --name my-app
 
 # Adopt only the verified rules into an existing project
-pnpm run create -- adopt ../existing-app --only rules,gates,docs,ci
+pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 ```
 
 `new` copies everything except `.git`, `node_modules`, build output, and the lockfile, renames `@adlc-kit/*` and `adlc-kit-ts` to `--scope`/`--name`, and recreates the `CLAUDE.md` alias. `adopt` never overwrites without `--force`, merges the missing runner scripts into `package.json`, and prints the prerequisites the gates assume. Details: [installer README](packages/create-adlc-kit-ts/README.md).
