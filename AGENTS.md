@@ -8,7 +8,7 @@ adlc-kit-ts — the TypeScript reference kit of the adlc-kit series: React + Vit
 pnpm install          # also installs lefthook hooks via postinstall
 pnpm run check:ci     # gate aggregate: lint + typecheck + test (one entry for local and CI)
 pnpm run check:all    # ci-primary + doc-sync; this is what CI runs
-pnpm run doc-sync     # documentation gates (bilingual pairing)
+pnpm run doc-sync     # documentation gates (pairing, notes, references)
 pnpm run dev:server   # Fastify, http://127.0.0.1:3000/health
 pnpm run dev:web      # Vite dev server (/api proxies to 127.0.0.1:3000)
 ```

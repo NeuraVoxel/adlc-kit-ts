@@ -21,7 +21,7 @@ The date is when the topic was **first proposed** (per git history). Notes cross
 
 Archive an implemented note when the shipped decision is complete and its rationale is unlikely to guide future work; the calibrated question is whether any alternative, ownership boundary, negative guarantee, durable-semantics rule, or reintroduction condition here still prevents a plausible mistake — never word count, age, or a quota. Never archive a proposed note: reject it instead. Keep a rejected note only while its rationale prevents a plausible mistake; otherwise delete it entirely.
 
-Archiving moves the complete English/Chinese pair to `archived/{class}/`, keeps `Status: implemented`, inserts `Archived: YYYY-MM-DD` directly below the status line in both files, and repairs or deletes inbound links — the only content changes archiving permits. Once sealed, the pair is permanently frozen: [`verify-archived-agent-notes`](../../../scripts/verify-archived-agent-notes.ts) hashes every archived file against the append-only manifest (`scripts/archived-notes.manifest.json`), so any later edit, move, or deletion fails the gate. Re-record the manifest only in the same change that adds new archives.
+Archiving moves the complete English/Chinese pair to `archived/{class}/`, keeps `Status: implemented`, inserts `Archived: YYYY-MM-DD` directly below the status line in both files, and repairs or deletes inbound links — the only content changes archiving permits. Once sealed, the pair is permanently frozen: [`verify-archived-agent-notes`](../../scripts/verify-archived-agent-notes.ts) hashes every archived file against the append-only manifest (`scripts/archived-notes.manifest.json`), so any later edit, move, or deletion fails the gate. Re-record the manifest only in the same change that adds new archives.
 
 ## When to write one
 
@@ -33,7 +33,7 @@ A note is never edited into a *different* decision: supersede it with a new note
 
 ## The file format
 
-The format gate ([`verify-agent-note-format`](../../../scripts/verify-agent-note-format.ts), part of `doc-sync`) enforces everything in this section; the classification gate enforces the path.
+The format gate ([`verify-agent-note-format`](../../scripts/verify-agent-note-format.ts), part of `doc-sync`) enforces everything in this section; the classification gate enforces the path.
 
 ### The header block
 

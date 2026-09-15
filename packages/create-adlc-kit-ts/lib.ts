@@ -20,6 +20,8 @@ export const COMPONENTS = {
     'scripts/verify-agent-note-format.spec.ts',
     'scripts/verify-archived-agent-notes.ts',
     'scripts/verify-archived-agent-notes.spec.ts',
+    'scripts/verify-doc-references.ts',
+    'scripts/verify-doc-references.spec.ts',
     'scripts/archived-notes.manifest.json',
   ],
   docs: [
@@ -47,6 +49,46 @@ export const COMPONENTS = {
 } as const
 
 export type ComponentName = keyof typeof COMPONENTS
+
+/**
+ * Components that carry the referents of the shipped instruction layer.
+ *
+ * `AGENTS.md` is the one file an agent is told to follow, so its links must
+ * land: it points at the docs, the workflow contracts, and the CI workflow.
+ * Installing `rules` without those writes standing orders that reference files
+ * the target never received — a dangling referent, which the root standing
+ * order forbids.
+ *
+ * Only the instruction layer is declared here. Cross-links *between* documents
+ * are validated by `verify-doc-references` inside this repository, and the
+ * kit-history links no component ships are pruned by adopters, as the CLI's
+ * own next-steps message says.
+ *
+ * `lib.spec.ts` re-derives this map from `AGENTS.md`, so it cannot drift.
+ */
+export const COMPONENT_REQUIRES: Readonly<Record<ComponentName, readonly ComponentName[]>> = {
+  rules: ['docs', 'workflows', 'ci'],
+  gates: [],
+  docs: [],
+  workflows: [],
+  ci: [],
+}
+
+/**
+ * Find the component dependencies a selection omits.
+ * @param names - the selected components.
+ * @returns one message per component with missing dependencies; empty when the
+ * selection is closed under `COMPONENT_REQUIRES`.
+ */
+export function findMissingComponents(names: readonly ComponentName[]): string[] {
+  const selected = new Set(names)
+  const missing: string[] = []
+  for (const name of names) {
+    const absent = COMPONENT_REQUIRES[name].filter(required => !selected.has(required))
+    if (absent.length > 0) missing.push(`${name} needs ${absent.join(', ')}`)
+  }
+  return missing
+}
 
 /** Directory segments excluded from a whole-checkout copy. */
 export const SEGMENT_EXCLUDES: readonly string[] = ['.git', 'node_modules', 'dist', 'coverage']
@@ -118,14 +160,52 @@ export interface RenameIdentities {
 /**
  * Apply the kit's placeholder identities to file content: scope first, then
  * the bare kit name.
+ *
+ * Markdown link targets are repository paths, not prose. Renaming one would
+ * break the reference, because a scaffold renames file *contents* and leaves
+ * file *names* alone — so `[…](…/2026-09-15-create-adlc-kit-ts-installer.md)`
+ * must keep pointing at the file that is actually on disk. Link text is prose
+ * and is renamed.
  * @param content - file content.
  * @param identities - target name and scope.
  * @returns renamed content.
  */
 export function applyRenames(content: string, identities: RenameIdentities): string {
-  return content
-    .replaceAll('@adlc-kit/', `${identities.scope}/`)
-    .replaceAll('adlc-kit-ts', identities.name)
+  const renameProse = (text: string): string =>
+    text.replaceAll('@adlc-kit/', `${identities.scope}/`).replaceAll('adlc-kit-ts', identities.name)
+  let renamed = ''
+  let cursor = 0
+  for (const match of content.matchAll(/(!?\[[^\]]*\]\()([^)\s]+)(\))/g)) {
+    renamed += renameProse(content.slice(cursor, match.index!))
+    renamed += `${renameProse(match[1]!)}${match[2]!}${match[3]!}`
+    cursor = match.index! + match[0].length
+  }
+  return renamed + renameProse(content.slice(cursor))
+}
+
+/**
+ * Unwrap Markdown links whose target the copy excludes.
+ *
+ * A scaffold omits the installer package and the lockfile, so a shipped
+ * document that links them would reference a path the target never received.
+ * Unwrapping keeps the link text as prose and drops only the reference; the
+ * link target itself is left alone, so kit-history links to files the scaffold
+ * does ship keep working.
+ * @param content - file content.
+ * @param resolveTarget - maps a link target to a repo-relative path; null when external.
+ * @returns the content with excluded references unwrapped.
+ */
+export function pruneExcludedReferences(
+  content: string,
+  resolveTarget: (target: string) => string | null,
+): string {
+  return content.replace(
+    /!?\[([^\]]*)\]\(([^)\s]+)\)/g,
+    (match, text: string, target: string) => {
+      const resolved = resolveTarget(target)
+      return resolved !== null && isExcluded(resolved) ? text : match
+    },
+  )
 }
 
 /**

@@ -7,14 +7,17 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync, readdirSync } from 'node:fs'
 import { cp, lstat, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises'
-import { basename, dirname, join, relative, resolve } from 'node:path'
+import { basename, dirname, join, posix, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { resolveReference } from '../../scripts/verify-doc-references.ts'
 import {
   applyRenames,
   COMPONENTS,
+  findMissingComponents,
   isExcluded,
   isRenamable,
   mergeScripts,
+  pruneExcludedReferences,
   resolveComponents,
   RUNNER_SCRIPTS,
   type RenameIdentities,
@@ -27,7 +30,7 @@ const toPosix = (path: string): string => path.split('\\').join('/')
 function usage(): never {
   console.error(`Usage:
   pnpm run create -- new <dir> [--scope <scope>] [--name <name>]
-  pnpm run create -- adopt [dir] [--only rules,gates,docs,ci] [--force]`)
+  pnpm run create -- adopt [dir] [--only rules,gates,docs,workflows,ci] [--force]`)
   process.exit(2)
 }
 
@@ -93,14 +96,29 @@ async function ensureClaudeSymlink(dir: string): Promise<void> {
   }
 }
 
-async function renameTree(dir: string, identities: RenameIdentities): Promise<void> {
+/**
+ * Rename identities across a copied tree's text surfaces and unwrap links to
+ * paths the copy excluded. Files keep their names; only content changes.
+ * @param root - the copied tree's root, for repo-relative link resolution.
+ * @param dir - the directory being walked.
+ * @param identities - target name and scope.
+ */
+async function renameTree(root: string, dir: string, identities: RenameIdentities): Promise<void> {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const abs = join(dir, entry.name)
     if (entry.isDirectory()) {
-      await renameTree(abs, identities)
+      await renameTree(root, abs, identities)
     } else if (entry.isFile() && isRenamable(toPosix(entry.name))) {
+      const from = toPosix(relative(root, abs))
       const content = await readFile(abs, 'utf8')
-      await writeFile(abs, applyRenames(content, identities))
+      const renamed = applyRenames(content, identities)
+      await writeFile(
+        abs,
+        pruneExcludedReferences(renamed, target => {
+          const resolved = resolveReference(from, target)
+          return resolved === null ? null : toPosix(posix.normalize(resolved))
+        }),
+      )
     }
   }
 }
@@ -116,7 +134,7 @@ async function runNew(target: string, identities: RenameIdentities): Promise<voi
     // cp's filter includes on true; keep everything the excludes do not match.
     filter: src => !isExcluded(toPosix(relative(kitRoot, src))),
   })
-  await renameTree(targetRoot, identities)
+  await renameTree(targetRoot, targetRoot, identities)
   await ensureClaudeSymlink(targetRoot)
   // The postinstall hook (`lefthook install`) requires a git repository;
   // a fresh scaffold owns its initialization.
@@ -152,6 +170,14 @@ async function runAdopt(
     throw new Error(`create-adlc-kit-ts: adopt target ${target} does not exist.`)
   }
   const components = resolveComponents(options.only)
+  // The instruction layer links files other components carry; refuse before any
+  // write rather than shipping standing orders that point at absent files.
+  const missing = findMissingComponents(components)
+  if (missing.length > 0) {
+    throw new Error(
+      `create-adlc-kit-ts: incomplete component selection (the shipped AGENTS.md links parts these components carry):\n${missing.map(line => `  - ${line}`).join('\n')}\nAdd the missing components to --only, or drop --only to install every component.`,
+    )
+  }
   const planned = components.flatMap(name => [...COMPONENTS[name]])
   const conflicts = planned.filter(file => existsSync(join(targetRoot, file)))
   if (conflicts.length > 0 && !options.force) {
@@ -174,6 +200,7 @@ async function runAdopt(
   console.log('  add "postinstall": "lefthook install" to package.json scripts')
   console.log('  provide lint / typecheck / test scripts — the gate graph invokes them')
   console.log('  prune framework-specific lines from AGENTS.md and docs/*.md; keep .zh.md counterparts in sync')
+  console.log('  doc-references stays red on the kit-history links those lines carry until they are pruned')
 }
 
 try {

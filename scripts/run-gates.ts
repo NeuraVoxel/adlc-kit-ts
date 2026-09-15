@@ -86,6 +86,11 @@ export function gatesForMode(mode: Mode): Gate[] {
           label: 'frozen archive integrity',
           command: ['pnpm', 'exec', 'tsx', 'scripts/verify-archived-agent-notes.ts'],
         },
+        {
+          id: 'doc-references',
+          label: 'documentation reference integrity',
+          command: ['pnpm', 'exec', 'tsx', 'scripts/verify-doc-references.ts'],
+        },
       ]
     case 'check-all':
       return [...gatesForMode('ci-primary'), ...gatesForMode('doc-sync')]

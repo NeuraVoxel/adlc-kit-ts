@@ -36,8 +36,10 @@ Faces own `module`/`moduleResolution`/`lib`; there is no root solution program. 
 `pnpm run check:ci` is `scripts/run-gates.ts ci-primary`. The runner only schedules the aggregate graph (spawn commands, `needs` dependencies, bounded parallelism, fail-fast per stage) and never parses a toolchain — adding a lane means adding Gate definitions, not runner changes. Current graph:
 
 - `ci-primary`: lint, typecheck, test — one parallel stage.
-- `doc-sync`: bilingual doc pairing.
+- `doc-sync`: bilingual doc pairing, agent note classification, agent note format, frozen archive integrity, documentation reference integrity — one parallel stage.
 - `check-all`: both of the above; this is what CI runs.
+
+Reference integrity covers repository-relative Markdown links in the paired corpus (`pairedDirs` plus `pairedRootFiles`, imported from the pairing gate); external URLs, protocol-relative targets, pure anchors, and paths written inside code spans or fenced blocks are out of scope. The agent-facing instruction layer is checked by the installer's component dependency instead, since its referents are a packaging property.
 
 Extension points:
 

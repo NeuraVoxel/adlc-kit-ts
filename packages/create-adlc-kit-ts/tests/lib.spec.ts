@@ -1,12 +1,22 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { collectReferences } from '../../../scripts/verify-doc-references.ts'
 import {
   applyRenames,
+  COMPONENT_REQUIRES,
+  COMPONENTS,
+  findMissingComponents,
   isExcluded,
   isRenamable,
   mergeScripts,
+  pruneExcludedReferences,
   resolveComponents,
   RUNNER_SCRIPTS,
+  type ComponentName,
 } from '../lib.ts'
+
+const kitRoot = resolve(import.meta.dirname, '..', '..', '..')
 
 describe('resolveComponents', () => {
   it('selects every component when --only is absent', () => {
@@ -60,6 +70,44 @@ describe('applyRenames', () => {
     expect(renamed).toContain('@myco/*')
     expect(renamed).not.toContain('adlc-kit')
   })
+
+  it('preserves markdown link targets, which are paths rather than prose', () => {
+    const renamed = applyRenames(
+      'See [the installer note](../../.agents/notes/implemented/process/2026-09-15-create-adlc-kit-ts-installer.md) in adlc-kit-ts.',
+      { name: 'my-app', scope: '@myco' },
+    )
+    expect(renamed).toContain('2026-09-15-create-adlc-kit-ts-installer.md')
+    expect(renamed).toContain('in my-app.')
+  })
+
+  it('renames link text, which is prose', () => {
+    expect(
+      applyRenames('[adlc-kit-ts docs](docs/architecture.md)', { name: 'my-app', scope: '@myco' }),
+    ).toBe('[my-app docs](docs/architecture.md)')
+  })
+})
+
+describe('pruneExcludedReferences', () => {
+  const resolve = (target: string): string | null =>
+    /^[a-z]+:/i.test(target) ? null : target.replace(/^\//, '')
+
+  it('unwraps a link into an excluded path and keeps its text', () => {
+    expect(
+      pruneExcludedReferences(
+        'Details: [installer README](packages/create-adlc-kit-ts/README.md).',
+        resolve,
+      ),
+    ).toBe('Details: installer README.')
+  })
+
+  it('unwraps an image into an excluded path', () => {
+    expect(pruneExcludedReferences('![lock](pnpm-lock.yaml)', resolve)).toBe('lock')
+  })
+
+  it('keeps references the copy ships and references that are external', () => {
+    const shipped = 'See [architecture](docs/architecture.md) and [web](https://example.com/x.md).'
+    expect(pruneExcludedReferences(shipped, resolve)).toBe(shipped)
+  })
 })
 
 describe('mergeScripts', () => {
@@ -72,5 +120,33 @@ describe('mergeScripts', () => {
     expect(scripts['check:ci']).toBe('custom')
     expect(scripts['doc-sync']).toBe(RUNNER_SCRIPTS['doc-sync'])
     expect(added).toEqual(['doc-sync', 'check:all'])
+  })
+})
+
+describe('findMissingComponents', () => {
+  it('rejects a selection that omits an instruction-layer dependency', () => {
+    expect(findMissingComponents(resolveComponents('rules,docs'))).toEqual([
+      'rules needs workflows, ci',
+    ])
+  })
+
+  it('accepts a complete selection and an independent component', () => {
+    expect(findMissingComponents(resolveComponents(undefined))).toEqual([])
+    expect(findMissingComponents(resolveComponents('gates'))).toEqual([])
+  })
+
+  it('declares exactly the components the shipped AGENTS.md links', () => {
+    const owner = new Map<string, ComponentName>()
+    for (const [name, files] of Object.entries(COMPONENTS) as [ComponentName, readonly string[]][]) {
+      for (const file of files) owner.set(file, name)
+    }
+    const linked = new Set<ComponentName>()
+    for (const { target } of collectReferences(
+      new Map([['AGENTS.md', readFileSync(resolve(kitRoot, 'AGENTS.md'), 'utf8')]]),
+    )) {
+      const name = owner.get(target)
+      if (name !== undefined && name !== 'rules') linked.add(name)
+    }
+    expect([...linked].sort()).toEqual([...COMPONENT_REQUIRES.rules].sort())
   })
 })

@@ -81,7 +81,13 @@ export function findPairingViolations(files: ReadonlyMap<string, string>): strin
   return violations.sort()
 }
 
-function collectCorpus(): Map<string, string> {
+/**
+ * Collect the paired documentation corpus.
+ * @returns repo-relative posix path → content for every `.md` under
+ * `pairedDirs` plus every existing `pairedRootFiles` entry. Exported so the
+ * reference gate scans exactly this corpus instead of re-deriving it.
+ */
+export function collectCorpus(): Map<string, string> {
   const files = new Map<string, string>()
   const readInto = (absPath: string, relPosixPath: string): void => {
     files.set(relPosixPath, readFileSync(absPath, 'utf8'))

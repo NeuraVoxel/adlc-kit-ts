@@ -36,8 +36,10 @@ face 自己拥有 `module`/`moduleResolution`/`lib`；不存在根级 solution �
 `pnpm run check:ci` 即 `scripts/run-gates.ts ci-primary`。runner 只做聚合图调度（spawn 命令、`needs` 依赖、有界并行、按阶段 fail-fast），不解析任何工具链——加一条泳道是加 Gate 定义，不是改 runner。当前图：
 
 - `ci-primary`：lint、typecheck、test —— 单一并行阶段。
-- `doc-sync`：双语文档配对。
+- `doc-sync`：双语文档配对、Agent Note 分类、Agent Note 格式、归档冻结完整性、文档引用完整性 —— 单一并行阶段。
 - `check-all`：以上两者；CI 跑的就是它。
+
+引用完整性只覆盖配对语料（`pairedDirs` 加 `pairedRootFiles`，直接从 pairing 门禁导入）中的仓库内相对 Markdown 链接；外链、协议相对目标、纯锚点，以及写在行内代码或围栏代码块里的路径都在范围之外。面向 agent 的指令层改由安装器的组件依赖检查，因为它的指涉物属于打包属性。
 
 扩展点：
 

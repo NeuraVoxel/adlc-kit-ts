@@ -11,7 +11,7 @@ Evidence matches the change surface: run the narrowest checks that would fail fo
 | `server/src/**` | The vitest `node` project (`server/tests/`); Fastify `inject()`, no network |
 | `apps/web/src/**` | The vitest `web` project (jsdom + Testing Library) |
 | `packages/contracts/src/**` | The consuming tests on both sides + `pnpm run typecheck` |
-| `scripts/**` | `scripts/run-gates.spec.ts` and `scripts/verify-doc-pairing.spec.ts` + `pnpm run check:all` |
+| `scripts/**` | The matching `scripts/*.spec.ts` (each verify gate owns one) + `pnpm run check:all` |
 | `packages/create-adlc-kit-ts/**` | `tests/lib.spec.ts` + a real scaffold/adopt smoke (see below) |
 | `.agents/{inbox,learning,skills}/**`, `ChangeLog.md`, `docs/release.md` | `pnpm run doc-sync` (paired contracts) + review; sparks, queue rows, and learning notes are ungated user content |
 | `docs/**`, `README*` | `pnpm run doc-sync` (bilingual pairing) |

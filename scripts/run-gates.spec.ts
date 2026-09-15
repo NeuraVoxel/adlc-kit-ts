@@ -54,6 +54,7 @@ describe('gatesForMode', () => {
       'agent-note-tree',
       'agent-note-format',
       'archived-agent-notes',
+      'doc-references',
     ])
   })
 
@@ -66,6 +67,7 @@ describe('gatesForMode', () => {
       'agent-note-tree',
       'agent-note-format',
       'archived-agent-notes',
+      'doc-references',
     ])
   })
 })

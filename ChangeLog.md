@@ -4,6 +4,16 @@ Notable changes to this repository are listed here by released semver. The versi
 
 ## Unreleased
 
+### Added
+
+- Reference-integrity gate (`verify-doc-references`) in `doc-sync`: every repository-relative Markdown link in the paired documentation corpus must resolve to a path that exists and stay inside the repository. External URLs, protocol-relative targets, anchors, and paths written inside code spans or fenced blocks are not checked, and the report counts references checked rather than corpus files.
+- Component dependency for the shipped instruction layer: `adopt` refuses an incomplete `--only` selection before writing any file and names the component that carries the missing referent, because `AGENTS.md` links the docs, the workflow contracts, and the CI workflow.
+
+### Fixed
+
+- `docs/architecture.md` and its Chinese counterpart list every gate `doc-sync` runs, and the notes README pair's gate links resolve instead of pointing one directory above the repository root.
+- Scaffolding preserves Markdown link targets: identity renames no longer rewrite link paths, so links to files whose names do not change keep working, and links to the excluded installer package are unwrapped to their link text.
+
 ## [0.2.0] — 2026-09-15
 
 ### Added

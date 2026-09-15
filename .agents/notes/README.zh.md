@@ -21,7 +21,7 @@
 
 当已交付的决策完整、其理由不再可能指导未来工作时归档该 implemented Note；校准的问法是：这里是否有某个替代方案、所有权边界、负面保证、持久语义规则或重新引入条件，仍能防止一个可能犯的错——绝不用字数、年龄或配额衡量。绝不归档 proposed Note：过时就转 rejected。rejected Note 只在其理由还能防止一个可能犯的错时保留，否则整体删除。
 
-归档把完整的英/中对移入 `archived/{class}/`，保留 `Status: implemented`，在两个文件的状态行下方插入 `Archived: YYYY-MM-DD`，并修复或删除入链——这是归档允许的全部内容变更。封存后永久冻结：[`verify-archived-agent-notes`](../../../scripts/verify-archived-agent-notes.ts) 将每个归档文件与 append-only manifest（`scripts/archived-notes.manifest.json`）中的哈希比对，任何后续编辑、移动或删除都会挂门禁。只在新增归档的同一变更内重新记录 manifest。
+归档把完整的英/中对移入 `archived/{class}/`，保留 `Status: implemented`，在两个文件的状态行下方插入 `Archived: YYYY-MM-DD`，并修复或删除入链——这是归档允许的全部内容变更。封存后永久冻结：[`verify-archived-agent-notes`](../../scripts/verify-archived-agent-notes.ts) 将每个归档文件与 append-only manifest（`scripts/archived-notes.manifest.json`）中的哈希比对，任何后续编辑、移动或删除都会挂门禁。只在新增归档的同一变更内重新记录 manifest。
 
 ## 何时写一条
 
@@ -33,7 +33,7 @@ Note 永不改写成*另一个*决策：用新 Note 取代并保持两者互链�
 
 ## 文件格式
 
-格式门禁（[`verify-agent-note-format`](../../../scripts/verify-agent-note-format.ts)，属 `doc-sync`）强制本节全部内容；分类门禁强制路径。
+格式门禁（[`verify-agent-note-format`](../../scripts/verify-agent-note-format.ts)，属 `doc-sync`）强制本节全部内容；分类门禁强制路径。
 
 ### 头部块
 
