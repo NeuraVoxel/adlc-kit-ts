@@ -40,6 +40,7 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 | `.agents/notes/` | 决策记录（Agent Notes） |
 | `.agents/inbox/`、`.agents/learning/` | 灵感排队（`QUEUE.md` 排队板）与会话复盘 |
 | `.agents/skills/` | `kit-*` 工作流技能（inbox 捕获/升格、学习笔记、发版） |
+| `.codebuddy/skills/` | 指向 `.agents/skills` 的符号链接别名——CodeBuddy Code 只在此处发现项目技能 |
 
 文档以英文为主档，配 `.zh.md` 中文对照；`pnpm run doc-sync` 拒绝两侧漂移。`AGENTS.md`（面向 agent）仅英文。
 

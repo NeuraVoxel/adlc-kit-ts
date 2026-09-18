@@ -22,9 +22,9 @@ pnpm run create -- adopt ../existing-app --only rules,gates,docs,workflows,ci
 | `workflows` | inbox and learning contracts, the `kit-*` skills, `ChangeLog.md`, `docs/release*` |
 | `ci` | `.github/workflows/ci.yml` |
 
-`new` copies everything except `.git`, `node_modules`, `dist`, `coverage`, the lockfile, and this installer package, renames `@adlc-kit/*` and `adlc-kit-ts` to `--scope`/`--name` across text surfaces, recreates the `CLAUDE.md` alias, and initializes the git repository the postinstall hook requires.
+`new` copies everything except `.git`, `node_modules`, `dist`, `coverage`, the lockfile, and this installer package, renames `@adlc-kit/*` and `adlc-kit-ts` to `--scope`/`--name` across text surfaces, recreates the `CLAUDE.md` alias and the `.codebuddy/skills` alias to `.agents/skills`, and initializes the git repository the postinstall hook requires.
 
-`adopt` never overwrites an existing file without `--force`; it merges the missing runner scripts into the target `package.json` only when the `gates` component is installed, and prints the dev-dependency and script prerequisites the gate graph assumes.
+`adopt` never overwrites an existing file without `--force`; it merges the missing runner scripts into the target `package.json` only when the `gates` component is installed, and prints the dev-dependency and script prerequisites the gate graph assumes. It recreates the same two aliases afterwards: `CLAUDE.md` always, and `.codebuddy/skills` when the target has `.agents/skills` (an existing non-symlink `.codebuddy/skills` is left untouched).
 
 `AGENTS.md` is the file an agent is told to follow, so its referents must land with it: it links the docs, the workflow contracts, and the CI workflow. A `--only` selection that includes `rules` therefore has to include `docs`, `workflows`, and `ci`; an incomplete selection is rejected before any file is written, naming the component that carries the missing referent. `gates` stands alone — nothing in the instruction layer links into `scripts/`.
 
